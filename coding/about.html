@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Descent - Into The Abyss</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        background-color: #000;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      /* The Deep Sea Gradient - Darkens faster now */
+      .ocean-container {
+        background: linear-gradient(
+          180deg,
+          #2c7da0 0%,
+          /* Surface (Darker Blue Start) */ #014f86 15%,
+          /* 200m - Twilight starts early */ #012a4a 30%,
+          /* 1000m - Midnight */ #000000 60%,
+          /* Abyss starts earlier */ #000000 100%
+        );
+        min-height: 300vh;
+        position: relative;
+        padding-bottom: 100px;
+      }
+
+      /* Animated Bubble Particles */
+      .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        animation: floatUp linear infinite;
+      }
+      @keyframes floatUp {
+        from {
+          transform: translateY(100vh);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.3;
+        }
+        to {
+          transform: translateY(-10vh);
+          opacity: 0;
+        }
+      }
+
+      /* Card Styling */
+      .creature-card {
+        background: rgba(0, 0, 0, 0.4); /* Darker cards */
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(79, 195, 247, 0.3);
+        border-radius: 15px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 140px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: absolute;
+        cursor: pointer;
+      }
+      .creature-card:hover {
+        transform: scale(1.15);
+        background: rgba(2, 136, 209, 0.3);
+        z-index: 10;
+        box-shadow: 0 0 25px rgba(2, 136, 209, 0.5);
+      }
+      .creature-img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+      }
+
+      /* Depth Ruler Line */
+      .depth-ruler {
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.5),
+          rgba(255, 255, 255, 0.1)
+        );
+      }
+      .depth-marker {
+        position: absolute;
+        left: 10px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.6);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        font-family: monospace;
+      }
+      .depth-marker::before {
+        content: "";
+        width: 8px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.5);
+        margin-right: 8px;
+        margin-left: -9px;
+      }
+
+      /* Zone Labels */
+      .zone-label {
+        position: absolute;
+        right: 20px;
+        text-align: right;
+        font-weight: 800;
+        font-size: 1.8rem;
+        opacity: 0.15;
+        text-transform: uppercase;
+        pointer-events: none;
+        letter-spacing: 0.1em;
+      }
+
+      /* Intro Text Animation */
+      .intro-text {
+        animation: fadeIn 2s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Modal Styling */
+      #infoModal {
+        transition: opacity 0.3s ease;
+      }
+      .modal-content {
+        background: rgba(10, 10, 20, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Back Button -->
+    <a
+      href="../index.html"
+      class="fixed top-5 left-5 z-50 bg-black/40 backdrop-blur-md border border-white/20 rounded-full py-2 px-4 hover:bg-white/10 transition shadow-lg flex items-center gap-2 group"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 text-gray-200 group-hover:-translate-x-1 transition-transform"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+      <span
+        class="text-sm font-semibold tracking-wide text-gray-200"
+        data-key="Surface"
+        >Surface</span
+      >
+    </a>
+
+    <!-- Info Modal (Hidden by default) -->
+    <div
+      id="infoModal"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 opacity-0 pointer-events-none p-4"
+    >
+      <div
+        class="modal-content relative w-full max-w-sm rounded-2xl p-6 text-center transform scale-95 transition-transform duration-300 overflow-y-auto max-h-[90vh]"
+      >
+        <button
+          id="closeModal"
+          class="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl"
+        >
+          &times;
+        </button>
+
+        <img
+          id="modalImg"
+          src=""
+          class="w-24 h-24 mx-auto object-contain mb-2 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+        />
+        <h2
+          id="modalTitle"
+          class="text-2xl font-bold text-sky-400 mb-1 tracking-widest"
+        >
+          Creature Name
+        </h2>
+        <p
+          id="modalDepth"
+          class="text-xs text-gray-500 mb-4 tracking-wider uppercase"
+        >
+          Depth Info
+        </p>
+
+        <!-- Zone Context -->
+        <div
+          class="bg-blue-950/50 p-3 rounded-lg mb-3 border-l-2 border-blue-500 text-left"
+        >
+          <h4
+            class="text-blue-400 text-xs font-bold uppercase mb-1"
+            data-key="ZoneInfo"
+          >
+            Zone Context
+          </h4>
+          <p id="modalZone" class="text-xs text-gray-300 italic">
+            Zone details...
+          </p>
+        </div>
+
+        <!-- Adaptation / Science Facts -->
+        <div class="text-left bg-white/5 p-4 rounded-xl border border-white/5">
+          <h4
+            class="text-sky-300 text-sm font-bold mb-2 uppercase tracking-wide flex items-center gap-2"
+          >
+            <span class="text-lg">🧬</span>
+            <span data-key="SurvivalStrategy">Survival Strategy</span>
+          </h4>
+          <div
+            id="modalFacts"
+            class="text-sm text-gray-300 space-y-3 font-light"
+          >
+            <!-- Scientific facts go here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Ocean Container -->
+    <div class="ocean-container" id="ocean">
+      <!-- Narrative Header -->
+      <div
+        class="absolute top-20 left-0 w-full text-center px-6 intro-text z-10"
+      >
+        <h1
+          class="text-2xl font-bold text-white mb-2 tracking-widest uppercase"
+          style="text-shadow: 0 0 10px rgba(0, 0, 0, 0.5)"
+        >
+          The Descent
+        </h1>
+        <p
+          class="text-xs text-blue-200 max-w-md mx-auto leading-relaxed"
+          data-key="IntroText"
+        >
+          To find the true monsters of the deep, we must leave the light behind.
+          Scroll down to enter the Abyss.
+        </p>
+        <div class="mt-4 animate-bounce text-blue-300 text-xl">↓</div>
+      </div>
+
+      <!-- Depth Ruler -->
+      <div class="depth-ruler">
+        <div class="depth-marker" style="top: 0%">0m</div>
+        <div class="depth-marker" style="top: 10%">200m</div>
+        <div class="depth-marker" style="top: 35%">1,000m</div>
+        <div class="depth-marker" style="top: 70%">4,000m</div>
+        <div class="depth-marker" style="top: 95%">6,000m+</div>
+      </div>
+
+      <!-- Zone Labels -->
+      <div class="zone-label" style="top: 2%">Sunlight</div>
+      <div class="zone-label" style="top: 15%">Twilight</div>
+      <div class="zone-label" style="top: 45%">Midnight</div>
+      <div class="zone-label" style="top: 80%">The Abyss</div>
+
+      <!-- 1. SUNLIGHT ZONE (Epipelagic) -->
+      <div
+        class="creature-card"
+        style="top: 10%; left: 50%; transform: translateX(-50%)"
+        onclick="openCreature('Sea Angel', 'sunlight')"
+      >
+        <img
+          src="../assets/images/sea_angel.png"
+          onerror="this.src='https://placehold.co/100x100?text=Sea+Angel'"
+          class="creature-img"
+        />
+        <h3 class="font-bold text-sm mt-2 text-sky-200" data-key="Sea Angel">
+          Sea Angel
+        </h3>
+        <p class="text-[10px] text-gray-400">0 - 350m</p>
+      </div>
+
+      <!-- 2. TWILIGHT ZONE (Mesopelagic) -->
+      <div
+        class="creature-card"
+        style="top: 20%; left: 20%"
+        onclick="openCreature('Megamouth Shark', 'twilight')"
+      >
+        <img
+          src="../assets/images/megamouth.png"
+          onerror="this.src='https://placehold.co/100x100?text=Megamouth'"
+          class="creature-img"
+        />
+        <h3
+          class="font-bold text-sm mt-2 text-sky-200"
+          data-key="Megamouth Shark"
+        >
+          Megamouth Shark
+        </h3>
+        <p class="text-[10px] text-gray-400">150 - 1000m</p>
+      </div>
+
+      <div
+        class="creature-card"
+        style="top: 25%; right: 15%"
+        onclick="openCreature('Barreleye', 'twilight')"
+      >
+        <img
+          src="../assets/images/barreleye.png"
+          onerror="this.src='https://placehold.co/100x100?text=Barreleye'"
+          class="creature-img"
+        />
+        <h3 class="font-bold text-sm mt-2 text-sky-200" data-key="Barreleye">
+          Barreleye
+        </h3>
+        <p class="text-[10px] text-gray-400">600 - 800m</p>
+      </div>
+
+      <div
+        class="creature-card"
+        style="top: 30%; left: 30%"
+        onclick="openCreature('Vampire Squid', 'twilight')"
+      >
+        <img
+          src="../assets/images/vampire.png"
+          onerror="this.src='https://placehold.co/100x100?text=Vampire'"
+          class="creature-img"
+        />
+        <h3
+          class="font-bold text-sm mt-2 text-sky-200"
+          data-key="Vampire Squid"
+        >
+          Vampire Squid
+        </h3>
+        <p class="text-[10px] text-gray-400">600 - 900m</p>
+      </div>
+
+      <!-- 3. MIDNIGHT ZONE (Bathypelagic) -->
+      <div
+        class="creature-card"
+        style="top: 42%; right: 25%"
+        onclick="openCreature('Blobfish', 'midnight')"
+      >
+        <img
+          src="../assets/images/blob.png"
+          onerror="this.src='https://placehold.co/100x100?text=Blobfish'"
+          class="creature-img"
+        />
+        <h3 class="font-bold text-sm mt-2 text-sky-200" data-key="Blobfish">
+          Blobfish
+        </h3>
+        <p class="text-[10px] text-gray-400">600 - 1200m</p>
+      </div>
+
+      <div
+        class="creature-card"
+        style="top: 50%; left: 10%"
+        onclick="openCreature('Atolla Jellyfish', 'midnight')"
+      >
+        <img
+          src="../assets/images/atolla.png"
+          onerror="this.src='https://placehold.co/100x100?text=Atolla'"
+          class="creature-img"
+        />
+        <h3
+          class="font-bold text-sm mt-2 text-sky-200"
+          data-key="Atolla Jellyfish"
+        >
+          Atolla Jellyfish
+        </h3>
+        <p class="text-[10px] text-gray-400">Deep Sea</p>
+      </div>
+
+      <div
+        class="creature-card"
+        style="top: 58%; right: 10%"
+        onclick="openCreature('Anglerfish', 'midnight')"
+      >
+        <img
+          src="../assets/images/angler.png"
+          onerror="this.src='https://placehold.co/100x100?text=Angler'"
+          class="creature-img"
+        />
+        <h3 class="font-bold text-sm mt-2 text-sky-200" data-key="Anglerfish">
+          Anglerfish
+        </h3>
+        <p class="text-[10px] text-gray-400">1000m - 4000m</p>
+      </div>
+
+      <div
+        class="creature-card"
+        style="top: 65%; left: 45%"
+        onclick="openCreature('Gulper Eel', 'midnight')"
+      >
+        <img
+          src="../assets/images/gulper.png"
+          onerror="this.src='https://placehold.co/100x100?text=Gulper'"
+          class="creature-img"
+        />
+        <h3 class="font-bold text-sm mt-2 text-sky-200" data-key="Gulper Eel">
+          Gulper Eel
+        </h3>
+        <p class="text-[10px] text-gray-400">500m - 3000m</p>
+      </div>
+
+      <!-- 4. THE ABYSS (Abyssopelagic) -->
+      <div
+        class="creature-card"
+        style="top: 82%; left: 20%"
+        onclick="openCreature('Dumbo Octopus', 'abyss')"
+      >
+        <img
+          src="../assets/images/dumbo.png"
+          onerror="this.src='https://placehold.co/100x100?text=Dumbo'"
+          class="creature-img"
+        />
+        <h3
+          class="font-bold text-sm mt-2 text-sky-200"
+          data-key="Dumbo Octopus"
+        >
+          Dumbo Octopus
+        </h3>
+        <p class="text-[10px] text-gray-400">3000m - 7000m</p>
+      </div>
+
+      <div
+        class="creature-card"
+        style="top: 90%; right: 20%"
+        onclick="openCreature('Yeti Crab', 'abyss')"
+      >
+        <img
+          src="../assets/images/yeti.png"
+          onerror="this.src='https://placehold.co/100x100?text=Yeti'"
+          class="creature-img"
+        />
+        <h3 class="font-bold text-sm mt-2 text-sky-200" data-key="Yeti Crab">
+          Yeti Crab
+        </h3>
+        <p class="text-[10px] text-gray-400">Hydrothermal Vents</p>
+      </div>
+    </div>
+
+    <script>
+      // 1. Generate Bubbles
+      const ocean = document.getElementById("ocean");
+      for (let i = 0; i < 40; i++) {
+        const b = document.createElement("div");
+        b.className = "particle";
+        const size = Math.random() * 8 + 3;
+        b.style.width = `${size}px`;
+        b.style.height = `${size}px`;
+        b.style.left = `${Math.random() * 100}%`;
+        b.style.animationDuration = `${Math.random() * 15 + 10}s`;
+        b.style.animationDelay = `${Math.random() * 5}s`;
+        ocean.appendChild(b);
+      }
+
+      // 2. Data & Language Support
+      const lang = localStorage.getItem("siteLang") || "en";
+      const isMy = lang === "my";
+
+      const translations = {
+        en: {
+          Surface: "Surface",
+          IntroText:
+            "To find the true monsters of the deep, we must leave the light behind. Scroll down to enter the Abyss.",
+          "Sea Angel": "Sea Angel",
+          "Megamouth Shark": "Megamouth Shark",
+          Barreleye: "Barreleye",
+          "Vampire Squid": "Vampire Squid",
+          Blobfish: "Blobfish",
+          "Atolla Jellyfish": "Atolla Jellyfish",
+          Anglerfish: "Anglerfish",
+          "Gulper Eel": "Gulper Eel",
+          "Dumbo Octopus": "Dumbo Octopus",
+          "Yeti Crab": "Yeti Crab",
+          ZoneInfo: "ZONE CONTEXT",
+          SurvivalStrategy: "SURVIVAL STRATEGY",
+        },
+        my: {
+          Surface: "Permukaan",
+          IntroText:
+            "Untuk mencari raksasa laut sebenar, kita mesti tinggalkan cahaya. Skrol ke bawah untuk masuki Abis.",
+          "Sea Angel": "Bidadari Laut",
+          "Megamouth Shark": "Jerung Megamouth",
+          Barreleye: "Ikan Barreleye",
+          "Vampire Squid": "Sotong Vampire",
+          Blobfish: "Ikan Blob",
+          "Atolla Jellyfish": "Obor-obor Atolla",
+          Anglerfish: "Ikan Angler",
+          "Gulper Eel": "Belut Gulper",
+          "Dumbo Octopus": "Sotong Dumbo",
+          "Yeti Crab": "Ketam Yeti",
+          ZoneInfo: "KONTEKS ZON",
+          SurvivalStrategy: "STRATEGI KELANGSUNGAN HIDUP",
+        },
+      };
+
+      // Zone Descriptions (Scientific Context)
+      const zoneData = {
+        sunlight: {
+          en: "Epipelagic Zone: The only layer with enough light for plants. Creatures here are often fast, transparent, or counter-shaded to hide.",
+          my: "Zon Epipelagik: Satu-satunya lapisan dengan cahaya cukup untuk tumbuhan. Makhluk di sini pantas, lutsinar, atau ada penyamaran warna.",
+        },
+        twilight: {
+          en: "Mesopelagic Zone: A world of perpetual twilight. Animals have huge eyes to catch faint light and use bioluminescence for camouflage.",
+          my: "Zon Mesopelagik: Dunia senja abadi. Haiwan ada mata besar untuk tangkap cahaya malap dan guna bioluminesens untuk menyamar.",
+        },
+        midnight: {
+          en: "Bathypelagic Zone: Pitch black. No sunlight reaches here. Animals are often black or red to be invisible, waiting for food to fall from above.",
+          my: "Zon Batipelagik: Gelap gelita. Tiada matahari sampai. Haiwan sering berwarna hitam atau merah untuk jadi halimunan, tunggu makanan jatuh.",
+        },
+        abyss: {
+          en: "Abyssopelagic Zone: Freezing, crushing pressure. Life moves in slow motion to save energy. This is the true alien world of Earth.",
+          my: "Zon Abisopelagik: Beku dan tekanan hancur. Hidupan bergerak perlahan untuk jimat tenaga. Ini dunia asing sebenar di Bumi.",
+        },
+      };
+
+      // Scientific/Adaptation Facts
+      const creatureScience = {
+        Barreleye: {
+          en: [
+            "Tubular eyes point upwards to spot prey silhouettes against the faint surface light.",
+            "Green eye pigment acts as sunglasses to filter out sunlight.",
+          ],
+          my: [
+            "Mata tiub menghadap ke atas untuk mengesan bayang mangsa di permukaan.",
+            "Pigmen mata hijau menapis cahaya matahari terang.",
+          ],
+        },
+        Blobfish: {
+          en: [
+            "Flesh is less dense than water, allowing it to float without expending energy.",
+            "Lack of muscle is an advantage in high-pressure environments.",
+          ],
+          my: [
+            "Isi kurang padat dari air, membolehkannya terapung tanpa guna tenaga.",
+            "Tiada otot adalah kelebihan di persekitaran tekanan tinggi.",
+          ],
+        },
+        "Atolla Jellyfish": {
+          en: [
+            "Uses 'Burglar Alarm' bioluminescence: flashes bright light to attract predators that will eat its attacker.",
+            "Red color makes it invisible in deep water.",
+          ],
+          my: [
+            "Guna bioluminesens 'Penggera Pencuri': berkelip terang untuk panggil pemangsa makan penyerangnya.",
+            "Warna merah menjadikannya halimunan.",
+          ],
+        },
+        "Dumbo Octopus": {
+          en: [
+            "Ear-like fins allow efficient, low-energy swimming in the abyss.",
+            "Swallows prey whole because it lacks the rough tongue (radula) other octopuses have.",
+          ],
+          my: [
+            "Sirip telinga membolehkan renangan cekap tenaga di abis.",
+            "Telan mangsa bulat-bulat kerana tiada lidah kasar (radula).",
+          ],
+        },
+        "Gulper Eel": {
+          en: [
+            "Massive jaw allows it to eat prey larger than itself since food is extremely rare.",
+            "Whip-like tail often features a lure to attract curiosity.",
+          ],
+          my: [
+            "Rahang gergasi membolehkan ia makan mangsa lebih besar darinya kerana makanan jarang.",
+            "Ekor seperti cambuk ada umpan penarik.",
+          ],
+        },
+        "Yeti Crab": {
+          en: [
+            "Grows bacteria on its hairy arms to eat (farming its own food).",
+            "Blind, relying purely on chemical sensors in dark thermal vents.",
+          ],
+          my: [
+            "Ternak bakteria pada lengan berbulu untuk dimakan.",
+            "Buta, bergantung pada deria kimia di lubang hidroterma gelap.",
+          ],
+        },
+        "Vampire Squid": {
+          en: [
+            "Uses filaments to catch 'marine snow' (falling debris) instead of hunting live prey.",
+            "Can turn itself inside out to expose spiky spines for defense.",
+          ],
+          my: [
+            "Guna filamen untuk tangkap 'salji laut' (sisa jatuh) bukannya memburu.",
+            "Boleh terbalikkan badan untuk tunjuk duri sebagai pertahanan.",
+          ],
+        },
+        "Megamouth Shark": {
+          en: [
+            "Filter feeder that swims with its mouth wide open to catch plankton.",
+            "Reflective mouth tissue may attract prey in the dim light.",
+          ],
+          my: [
+            "Pemakan penapis yang berenang mulut terbuka untuk tangkap plankton.",
+            "Tisu mulut memantul cahaya mungkin tarik perhatian mangsa.",
+          ],
+        },
+        Anglerfish: {
+          en: [
+            "Extreme sexual dimorphism: males attach to females as permanent parasites.",
+            "Bioluminescent lure contains symbiotic bacteria.",
+          ],
+          my: [
+            "Dimorfisme seksual ekstrem: jantan melekat pada betina sebagai parasit kekal.",
+            "Umpan bercahaya mengandungi bakteria simbiotik.",
+          ],
+        },
+        "Sea Angel": {
+          en: [
+            "Modified gastropod foot evolved into wing-like structures for swimming.",
+            "Transparent body provides camouflage in the clear open ocean.",
+          ],
+          my: [
+            "Kaki gastropod diubah suai menjadi struktur sayap untuk berenang.",
+            "Badan lutsinar memberi penyamaran di laut terbuka.",
+          ],
+        },
+      };
+
+      // Apply Translations to Labels
+      const t = translations[isMy ? "my" : "en"];
+      document.querySelectorAll("[data-key]").forEach((el) => {
+        const key = el.getAttribute("data-key");
+        if (t[key]) el.innerText = t[key];
+      });
+
+      // 3. Modal Logic
+      const modal = document.getElementById("infoModal");
+      const content = modal.querySelector(".modal-content");
+      const modalImg = document.getElementById("modalImg");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalFacts = document.getElementById("modalFacts");
+      const modalZone = document.getElementById("modalZone");
+      const closeBtn = document.getElementById("closeModal");
+
+      // Function called by onclick in HTML
+      window.openCreature = (key, zone) => {
+        const name = t[key] || key; // Get translated name
+        const facts = creatureScience[key][isMy ? "my" : "en"];
+        const zoneText = zoneData[zone][isMy ? "my" : "en"];
+
+        const imgPath = `../assets/images/${
+          key.toLowerCase().split(" ")[0]
+        }.png`;
+
+        modalImg.src = imgPath;
+        modalImg.onerror = function () {
+          this.src = "https://placehold.co/100x100?text=No+Img";
+        };
+        modalTitle.innerText = name;
+        modalZone.innerText = zoneText;
+
+        // Build list
+        modalFacts.innerHTML = facts
+          .map((f) => `<p class="pl-2 border-l-2 border-sky-500/50">${f}</p>`)
+          .join("");
+
+        // Show Modal
+        modal.classList.remove("opacity-0", "pointer-events-none");
+        content.classList.remove("scale-95");
+        content.classList.add("scale-100");
+      };
+
+      // Close Logic
+      closeBtn.onclick = () => {
+        modal.classList.add("opacity-0", "pointer-events-none");
+        content.classList.add("scale-95");
+        content.classList.remove("scale-100");
+      };
+
+      // Close on clicking outside
+      modal.onclick = (e) => {
+        if (e.target === modal) closeBtn.click();
+      };
+    </script>
+  </body>
+</html>

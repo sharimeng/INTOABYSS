@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>How to Explore - Into The Abyss</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: url("bg-1.jpg") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+
+    .bubble-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      animation: floatUp 18s infinite linear;
+    }
+
+    .bubble:nth-child(1){ width:20px; left:10%; }
+    .bubble:nth-child(2){ width:30px; left:30%; animation-duration:14s; }
+    .bubble:nth-child(3){ width:15px; left:50%; animation-duration:22s; }
+    .bubble:nth-child(4){ width:40px; left:70%; animation-duration:16s; }
+    .bubble:nth-child(5){ width:25px; left:85%; animation-duration:20s; }
+
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(0.2); opacity: 0; }
+      10% { opacity: 0.8; }
+      to { transform: translateY(-100vh) scale(1.4); opacity: 0; }
+    }
+
+    .glass {
+      background: rgba(10,38,71,0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 2.5rem;
+      max-width: 720px;
+      width: 100%;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      animation: fadeUp 1s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .start-btn {
+      background: #0e7490;
+      transition: 0.3s;
+    }
+    .start-btn:hover {
+      background: #06b6d4;
+      transform: scale(1.05);
+    }
+
+    .step-badge {
+      background: #a5f3fc;
+      color: #0f172a;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- AUDIO -->
+  <audio id="bgMusic" src="bg-audio.mp3" loop></audio>
+  <audio id="clickSound" src="button.mp3"></audio>
+
+  <!-- BUBBLES -->
+  <div class="bubble-container">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="relative z-10 min-h-screen flex flex-col p-4 md:p-10">
+
+    <!-- TOP BAR -->
+    <div class="flex justify-between items-center mb-4">
+      <!-- BACK BUTTON -->
+      <a
+        href="../index.html"
+        class="text-cyan-300 text-lg hover:text-white flex items-center"
+      >
+        ← Back
+      </a>
+
+      <button id="muteBtn" class="text-2xl">🔊</button>
+    </div>
+
+    <!-- CENTER CONTENT -->
+    <div class="flex-1 flex items-center justify-center">
+      <div class="glass">
+
+        <h1 class="text-4xl font-bold text-cyan-300 text-center mb-10">
+          How to Explore
+        </h1>
+
+        <div class="space-y-6 mb-10">
+          <div class="flex items-start">
+            <div class="step-badge w-9 h-9 rounded-full flex items-center justify-center">1</div>
+            <p class="ml-5">Allow camera access when the browser asks for permission.</p>
+          </div>
+
+          <div class="flex items-start">
+            <div class="step-badge w-9 h-9 rounded-full flex items-center justify-center">2</div>
+            <p class="ml-5">Point your camera at the markers in the storybook.</p>
+          </div>
+
+          <div class="flex items-start">
+            <div class="step-badge w-9 h-9 rounded-full flex items-center justify-center">3</div>
+            <p class="ml-5">See deep-sea creatures appear in 3D.</p>
+          </div>
+        </div>
+
+        <a
+          href="explore-en.html"
+          class="start-btn block text-center text-white font-bold py-3 rounded-full"
+        >
+          Start Camera
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const music = document.getElementById("bgMusic");
+    const clickSound = document.getElementById("clickSound");
+    const muteBtn = document.getElementById("muteBtn");
+
+    let isMuted = localStorage.getItem("soundMuted") === "true";
+
+    function applyMute() {
+      music.muted = isMuted;
+      clickSound.muted = isMuted;
+      muteBtn.textContent = isMuted ? "🔇" : "🔊";
+    }
+    applyMute();
+
+    document.addEventListener("click", () => {
+      if (!isMuted && music.paused) {
+        music.play().catch(() => {});
+      }
+    }, { once: true });
+
+    muteBtn.addEventListener("click", () => {
+      isMuted = !isMuted;
+      localStorage.setItem("soundMuted", isMuted);
+      applyMute();
+      if (!isMuted && music.paused) {
+        music.play().catch(() => {});
+      }
+    });
+
+    document.querySelectorAll("a, button").forEach(el => {
+      el.addEventListener("click", () => {
+        if (!isMuted) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch(() => {});
+        }
+      });
+    });
+
+    // Force site language to English
+    localStorage.setItem("siteLang", "en");
+  </script>
+
+</body>
+</html>

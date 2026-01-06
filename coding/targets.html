@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Into The Abyss - AR Targets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-image: url("../assets/images/bg-1.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding-bottom: 100px;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .glassmorphism-container {
+        background-color: rgba(10, 38, 71, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeSlide 1s ease-out forwards;
+        border-radius: 2rem;
+        padding: 2rem;
+        position: relative;
+      }
+
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .glow-text {
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+      }
+
+      .target-img {
+        transition: 0.3s;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+      }
+
+      .target-img:hover {
+        transform: scale(1.07);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+      }
+
+      .control-btn {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(0, 255, 255, 0.5);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .control-btn:hover {
+        background: rgba(0, 255, 255, 0.2);
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      }
+
+      .download-card {
+        background: rgba(0, 255, 255, 0.05);
+        border: 1px dashed rgba(0, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .marker-grid::-webkit-scrollbar {
+        width: 6px;
+      }
+      .marker-grid::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .marker-grid::-webkit-scrollbar-thumb {
+        background: rgba(0, 255, 255, 0.3);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-900 text-white">
+    <audio
+      id="bgMusic"
+      src="../assets/audio/bg-audio.mp3"
+      autoplay
+      loop
+    ></audio>
+    <audio id="clickSound" src="../assets/audio/click-sound.mp3"></audio>
+
+    <div
+      class="flex justify-between items-center absolute top-6 left-6 right-6 z-40"
+    >
+      <a
+        href="../index.html"
+        class="text-cyan-300 text-lg hover:text-white flex items-center gap-2"
+      >
+        ← <span id="txt-back">Back</span>
+      </a>
+      <div class="flex items-center gap-4">
+        <button
+          id="langSwitch"
+          class="control-btn px-4 py-2 rounded-full font-semibold text-sm"
+        >
+          🌐 EN
+        </button>
+        <button
+          id="muteBtn"
+          class="control-btn w-10 h-10 rounded-full flex items-center justify-center text-xl"
+        >
+          🔊
+        </button>
+      </div>
+    </div>
+
+    <div class="min-h-screen flex items-center justify-center p-4 py-20">
+      <div class="glassmorphism-container w-full max-w-4xl shadow-lg relative">
+        <div class="mt-8 text-center">
+          <h1 class="text-3xl font-semibold tracking-wider mb-6 glow-text">
+            <span id="title-main">AR Assets</span>
+          </h1>
+
+          <div
+            class="mb-8 p-6 rounded-2xl download-card max-w-xl mx-auto border-cyan-500/50"
+          >
+            <h2
+              id="opt1-title"
+              class="text-xl font-semibold text-cyan-300 mb-1"
+            >
+              Option 1: Complete Field Guide
+            </h2>
+            <p id="opt1-desc" class="text-sm text-gray-300 mb-4">
+              Download the full flipbook containing all information and markers.
+            </p>
+            <a
+              href="../assets/field-guide.pdf"
+              download
+              class="inline-flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-2 rounded-full transition-all font-semibold shadow-lg"
+            >
+              <span>📖</span> <span id="opt1-btn">Download Flipbook</span>
+            </a>
+          </div>
+
+          <div class="flex items-center justify-center gap-4 mb-8">
+            <div class="h-[1px] bg-white/20 w-20"></div>
+            <span id="txt-or" class="text-gray-400 italic">OR</span>
+            <div class="h-[1px] bg-white/20 w-20"></div>
+          </div>
+
+          <div class="text-center mb-4">
+            <h2
+              id="opt2-title"
+              class="text-xl font-semibold text-cyan-300 mb-1"
+            >
+              Option 2: Individual Markers
+            </h2>
+            <p id="opt2-desc" class="text-sm text-gray-300 mb-6">
+              Click on a specific marker below to download it individually.
+            </p>
+          </div>
+
+          <div
+            id="marker-container"
+            class="marker-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-h-[40vh] overflow-y-auto p-4 bg-black/20 rounded-lg"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <footer
+      class="fixed bottom-0 left-0 w-full p-3 text-center text-xs text-gray-300 bg-gray-900 bg-opacity-40 backdrop-blur-sm"
+    >
+      <p class="font-semibold" id="footer1">A Final Year Project by:</p>
+      <p id="footer2">
+        Alia Azwa Binti Mohd Kamal & Sharifah Nuraini Binti Gulam
+      </p>
+      <p id="footer3">
+        Faculty of Computing and Informatics, Universiti Malaysia Sabah
+      </p>
+    </footer>
+
+    <script>
+      let currentLang = localStorage.getItem("siteLang") || "en";
+
+      const creatures = [
+        { id: 4, en: "Barrel Eye", my: "Ikan Barrel Eye" },
+        { id: 5, en: "Blob Fish", my: "Ikan Blob" },
+        { id: 6, en: "Atolla Jellyfish", my: "Obor-obor Atolla" },
+        { id: 7, en: "Dumbo Octopus", my: "Oktokus Dumbo" },
+        { id: 8, en: "Gulper Eel", my: "Belut Gulper" },
+        { id: 9, en: "Yeti Crab", my: "Ketam Yeti" },
+        { id: 10, en: "Vampire Squid", my: "Sotong Pontianak" },
+        { id: 11, en: "Megamouth Shark", my: "Jerung Megamouth" },
+        { id: 12, en: "Anglerfish", my: "Ikan Pemancing" },
+        { id: 13, en: "Sea Angel", my: "Malaikat Laut" },
+      ];
+
+      const textContent = {
+        en: {
+          back: "Back",
+          titleMain: "AR Assets",
+          opt1Title: "Option 1: Complete Field Guide",
+          opt1Desc:
+            "Download the full flipbook containing all information and markers.",
+          opt1Btn: "Download Flipbook",
+          txtOr: "OR",
+          opt2Title: "Option 2: Individual Markers",
+          opt2Desc:
+            "Click on a specific marker below to download it individually.",
+          footer1: "A Final Year Project by:",
+          footer3:
+            "Faculty of Computing and Informatics, Universiti Malaysia Sabah",
+        },
+        my: {
+          back: "Kembali",
+          titleMain: "Aset AR",
+          opt1Title: "Pilihan 1: Buku Panduan Lengkap",
+          opt1Desc:
+            "Muat turun buku flip penuh yang mengandungi semua maklumat dan penanda.",
+          opt1Btn: "Muat Turun Buku Flip",
+          txtOr: "ATAU",
+          opt2Title: "Pilihan 2: Penanda Individu",
+          opt2Desc:
+            "Klik pada penanda tertentu di bawah untuk memuat turun secara berasingan.",
+          footer1: "Projek Tahun Akhir oleh:",
+          footer3: "Fakulti Pengkomputeran dan Informatik, UMS",
+        },
+      };
+
+      function renderMarkers() {
+        const container = document.getElementById("marker-container");
+        container.innerHTML = "";
+        creatures.forEach((c) => {
+          const name = currentLang === "en" ? c.en : c.my;
+          container.innerHTML += `
+            <div class="text-center">
+              <a href="../assets/images/${c.id}.png" download onclick="playClick()">
+                <img src="../assets/images/${c.id}.png" class="target-img w-full h-auto rounded-lg border-2 border-cyan-700/50" alt="${name}"/>
+              </a>
+              <p class="mt-2 text-[10px] uppercase tracking-tighter font-semibold text-cyan-300 leading-tight">${name}</p>
+            </div>
+          `;
+        });
+      }
+
+      function updateLanguage() {
+        const t = textContent[currentLang];
+        document.getElementById("txt-back").textContent = t.back;
+        document.getElementById("title-main").textContent = t.titleMain;
+        document.getElementById("opt1-title").textContent = t.opt1Title;
+        document.getElementById("opt1-desc").textContent = t.opt1Desc;
+        document.getElementById("opt1-btn").textContent = t.opt1Btn;
+        document.getElementById("txt-or").textContent = t.txtOr;
+        document.getElementById("opt2-title").textContent = t.opt2Title;
+        document.getElementById("opt2-desc").textContent = t.opt2Desc;
+        document.getElementById("footer1").textContent = t.footer1;
+        document.getElementById("footer3").textContent = t.footer3;
+        document.getElementById("langSwitch").textContent =
+          currentLang === "en" ? "🌐 EN" : "🌐 MY";
+        localStorage.setItem("siteLang", currentLang);
+        renderMarkers();
+      }
+
+      document.getElementById("langSwitch").onclick = () => {
+        currentLang = currentLang === "en" ? "my" : "en";
+        updateLanguage();
+      };
+
+      updateLanguage();
+
+      const bgMusic = document.getElementById("bgMusic");
+      const muteBtn = document.getElementById("muteBtn");
+      const clickSound = document.getElementById("clickSound");
+
+      function playClick() {
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch((e) => {});
+        }
+      }
+
+      document.querySelectorAll("a, button").forEach((btn) => {
+        if (!btn.onclick) btn.addEventListener("click", playClick);
+      });
+
+      muteBtn.addEventListener("click", () => {
+        if (bgMusic.muted) {
+          bgMusic.muted = false;
+          muteBtn.textContent = "🔊";
+        } else {
+          bgMusic.muted = true;
+          muteBtn.textContent = "🔇";
+        }
+      });
+    </script>
+  </body>
+</html>
