@@ -1,4 +1,4 @@
-import { loadAudio } from "../libs/loader.js";
+ import { loadAudio } from "../libs/loader.js";
 import { DRACOLoader } from "../libs/three.js-r132/examples/jsm/loaders/DRACOLoader.js";
 import { GLTFLoader } from "../libs/three.js-r132/examples/jsm/loaders/GLTFLoader.js";
 
@@ -345,8 +345,8 @@ const createFactButton = (anchorId, clickSound) => {
   const btn = document.createElement("button");
   btn.innerText = "📘 INTERESTING FACT ✨";
   Object.assign(btn.style,{
-    position:"absolute", bottom:"25px", left:"50%", transform:"translateX(-50%)",
-    padding:"14px 28px", fontSize:"19px", borderRadius:"30px", border:"none",
+    position:"absolute", bottom:"25px", left:"40%", transform:"translateX(-50%)",
+    padding:"10px 20px", fontSize:"13px", borderRadius:"20px", border:"none",
     background:"#0ea5e9", color:"#fff", fontWeight:"600", cursor:"pointer",
     display:"none", zIndex:"9999", boxShadow:"0 6px 18px rgba(0,0,0,0.3)"
   });
@@ -450,8 +450,8 @@ document.addEventListener("DOMContentLoaded", async()=>{
     const narrationBtn=document.createElement("button");
     narrationBtn.innerText=`${modelNames[i]} Narration`;
     Object.assign(narrationBtn.style,{
-      position:"absolute", bottom:"25px", left:`calc(50% + 180px)`,
-      padding:"14px 28px", fontSize:"19px", borderRadius:"30px", border:"none",
+      position:"absolute", bottom:"25px", left:`calc(33% + 180px)`,
+      padding:"10px 18px", fontSize:"13px", borderRadius:"20px", border:"none",
       background:"#14b8a6", color:"#fff", fontWeight:"600", cursor:"pointer",
       display:"none", zIndex:"9999", boxShadow:"0 6px 18px rgba(0,0,0,0.3)"
     });
