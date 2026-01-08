@@ -50,7 +50,11 @@ const translations = {
       "Barreleye": "Barreleye",
       "Anglerfish": "Anglerfish",
       "Blobfish": "Blobfish",
-      "Vampire Squid": "Vampire Squid"
+      "Vampire Squid": "Vampire Squid",
+      "Yeti Crab": "Yeti Crab ",
+      "Sea Angel": "Sea Angel",
+      "Megamouth Shark": "Megamouth shark",
+      "Atolla Jellyfish": "ubur-ubur Atolla"
     },
     facts: {
       "Anglerfish": "Uses a glowing lure to attract prey.",
@@ -96,7 +100,11 @@ const translations = {
       "Barreleye": "Barreleye",
       "Anglerfish": "Ikan Angler",
       "Blobfish": "Ikan Blob",
-      "Vampire Squid": "Sotong Vampire"
+      "Vampire Squid": "Sotong Vampire",
+      "Yeti Crab": "Ketam Yeti ",
+      "Sea Angel": "Bidadari Laut",
+      "Megamouth Shark": "Jerung Megamouth",
+      "Atolla Jellyfish": "ubur-ubur Atolla"
     },
     facts: {
       "Anglerfish": "Guna umpan bercahaya untuk tarik mangsa.",
@@ -503,14 +511,14 @@ const createMatchGame = (gameId, type, correctSound, wrongSound, celebrationSoun
   // For 'fact', we look up the translated fact based on the English ID key
   const data = type === 'look' 
     ? [
-        { name: t.creatures["Dumbo Octopus"], id: "Dumbo Octopus", src: "dumbo.png" }, 
-        { name: t.creatures["Gulper Eel"], id: "Gulper Eel", src: "gulper.png" }, 
-        { name: t.creatures["Barreleye"], id: "Barreleye", src: "barreleye.png" }
+        { name: t.creatures["Dumbo Octopus"], id: "Dumbo Octopus", src: "7.png" }, 
+        { name: t.creatures["Gulper Eel"], id: "Gulper Eel", src: "8.png" }, 
+        { name: t.creatures["Barreleye"], id: "Barreleye", src: "4.png" }
       ]
     : [
-        { info: t.facts["Anglerfish"], id: "Anglerfish", src: "angler.png" }, 
-        { info: t.facts["Blobfish"], id: "Blobfish", src: "blob.png" }, 
-        { info: t.facts["Vampire Squid"], id: "Vampire Squid", src: "vampire.png" }
+        { info: t.facts["Anglerfish"], id: "Anglerfish", src: "12.png" }, 
+        { info: t.facts["Blobfish"], id: "Blobfish", src: "5.png" }, 
+        { info: t.facts["Vampire Squid"], id: "Vampire Squid", src: "10.png" }
       ];
 
   let attemptCount = 0;
@@ -617,9 +625,9 @@ const createMemoryGame = (gameId, celebrationSound, wowSound, onComplete) => {
   const instruction = t.instructions.memory;
 
   const cardsData = [
-    { name: "A", src: "angler.png" }, { name: "B", src: "blob.png" }, 
-    { name: "V", src: "vampire.png" }, { name: "D", src: "dumbo.png" }, 
-    { name: "G", src: "gulper.png" }, { name: "Ba", src: "barreleye.png" }
+    { name: "A", src: "12.png" }, { name: "B", src: "5.png" }, 
+    { name: "V", src: "10.png" }, { name: "D", src: "7.png" }, 
+    { name: "G", src: "8.png" }, { name: "Ba", src: "4.png" }
   ];
 
   const reset = () => {
@@ -675,10 +683,10 @@ const createFillNameGame = (gameId, correctSound, wrongSound, celebrationSound, 
 
   // Use translated names for validation
   const images = [
-      { src: "angler.png", name: t.creatures["Anglerfish"] }, 
-      { src: "blob.png", name: t.creatures["Blobfish"] }, 
-      { src: "vampire.png", name: t.creatures["Vampire Squid"] }, 
-      { src: "barreleye.png", name: t.creatures["Barreleye"] }
+      { src: "14.png", name: t.creatures["Sea Angel"] }, 
+      { src: "16.png", name: t.creatures["Megamouth Shark"] }, 
+      { src: "15.png", name: t.creatures["Attola Jellyfish"] }, 
+      { src: "17.png", name: t.creatures["Yeti Crab"] }
   ];
 
   const reset = () => {
@@ -842,7 +850,7 @@ const createGameMenuButtons = (games, buttonSound) => {
 
   exitBtn.onclick = () => { 
     buttonSound.play(); document.body.style.opacity = "0"; 
-    setTimeout(() => { window.location.href = "index.html"; }, 400); 
+    setTimeout(() => { window.location.href = "../index.html"; }, 400); 
   };
 
   const icons = ["dumbo.png", "angler.png", "angler.png", "angler.png"];
